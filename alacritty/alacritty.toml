@@ -1,40 +1,92 @@
+# Alacritty Configuration
+# Theme: Catppuccin Macchiato (matching tmux and neovim)
 
-[colors]
-draw_bold_text_with_bright_colors = true
-
-[colors.bright]
-black = "#625e4c"
-blue = "#9d65ff"
-cyan = "#58d1eb"
-green = "#98e024"
-magenta = "#f4005f"
-red = "#f4005f"
-white = "#f6f6ef"
-yellow = "#e0d561"
-
-[colors.normal]
-black = "#1a1a1a"
-blue = "#9d65ff"
-cyan = "#58d1eb"
-green = "#98e024"
-magenta = "#f4005f"
-red = "#f4005f"
-white = "#c4c5b5"
-yellow = "#fa8419"
-
-[colors.primary]
-background = "0x1a1b26"
-foreground = "0xa9b1d6"
+[general]
+live_config_reload = true
 
 [env]
 TERM = "xterm-256color"
 
+# Catppuccin Macchiato Colors
+[colors.primary]
+background = "#24273a"
+foreground = "#cad3f5"
+dim_foreground = "#8087a2"
+bright_foreground = "#cad3f5"
+
+[colors.cursor]
+text = "#24273a"
+cursor = "#f4dbd6"
+
+[colors.vi_mode_cursor]
+text = "#24273a"
+cursor = "#b7bdf8"
+
+[colors.search.matches]
+foreground = "#24273a"
+background = "#a5adcb"
+
+[colors.search.focused_match]
+foreground = "#24273a"
+background = "#a6da95"
+
+[colors.hints.start]
+foreground = "#24273a"
+background = "#eed49f"
+
+[colors.hints.end]
+foreground = "#24273a"
+background = "#a5adcb"
+
+[colors.selection]
+text = "#24273a"
+background = "#f4dbd6"
+
+[colors.normal]
+black = "#494d64"
+red = "#ed8796"
+green = "#a6da95"
+yellow = "#eed49f"
+blue = "#8aadf4"
+magenta = "#f5bde6"
+cyan = "#8bd5ca"
+white = "#b8c0e0"
+
+[colors.bright]
+black = "#5b6078"
+red = "#ed8796"
+green = "#a6da95"
+yellow = "#eed49f"
+blue = "#8aadf4"
+magenta = "#f5bde6"
+cyan = "#8bd5ca"
+white = "#a5adcb"
+
+[colors.dim]
+black = "#494d64"
+red = "#ed8796"
+green = "#a6da95"
+yellow = "#eed49f"
+blue = "#8aadf4"
+magenta = "#f5bde6"
+cyan = "#8bd5ca"
+white = "#b8c0e0"
+
+# Font Configuration
 [font]
 size = 18.0
+
+[font.normal]
+family = "FiraCode Nerd Font"
+style = "Regular"
 
 [font.bold]
 family = "FiraCode Nerd Font"
 style = "Bold"
+
+[font.italic]
+family = "FiraCode Nerd Font"
+style = "Italic"
 
 [font.bold_italic]
 family = "FiraCode Nerd Font"
@@ -44,30 +96,30 @@ style = "Bold Italic"
 x = 0
 y = 0
 
-[font.italic]
-family = "FiraCode Nerd Font"
-style = "Italic"
-
-[font.normal]
-family = "FiraCode Nerd Font"
-style = "Regular"
-
 [font.offset]
 x = 0
 y = 0
 
-
+# Scrolling
 [scrolling]
 history = 10000
 multiplier = 4
 
+# Selection
 [selection]
 save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>"
 
+# Terminal Shell
 [terminal.shell]
-args = ["-l", "-c", "tmux attach || tmux"]
 program = "/bin/zsh"
+args = ["-l", "-c", "tmux attach || tmux"]
+
+[terminal]
+
+# Window
+[window]
+startup_mode = "Maximized"
 
 [window.dimensions]
 columns = 90
@@ -76,14 +128,3 @@ lines = 25
 [window.padding]
 x = 2
 y = 2
-
-[window]
-startup_mode = "Maximized"
-
-
-[general]
-# config path: '~/.config/alacritty/alacritty.toml'
-
-live_config_reload = true
-
-[terminal]
