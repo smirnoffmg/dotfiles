@@ -1,6 +1,10 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+-- Keymaps configuration
 local map = vim.keymap.set
+local g = vim.g
+
+-- Set leader key
+g.mapleader = " "
+g.maplocalleader = " "
 
 -- Better escape
 map("i", "jk", "<Esc>", {

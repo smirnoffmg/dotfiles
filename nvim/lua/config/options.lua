@@ -1,6 +1,18 @@
--- Options are automatically loaded before lazy.nvim startup
--- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
+-- Neovim options and settings
 local opt = vim.opt
+
+-- Set colorscheme after plugins load (fallback)
+vim.api.nvim_create_autocmd("User", {
+    pattern = "LazyDone",
+    callback = function()
+        if vim.g.colors_name ~= "catppuccin" then
+            local ok, _ = pcall(vim.cmd.colorscheme, "catppuccin")
+            if not ok then
+                vim.cmd.colorscheme("default")
+            end
+        end
+    end
+})
 
 -- UI
 opt.number = true -- Show line numbers
