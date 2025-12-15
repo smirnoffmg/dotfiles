@@ -112,7 +112,7 @@ else
     if [ ! -d "$PLUGIN_PATH" ]; then
         error "Plugin not found: $PLUGIN_NAME"
     fi
-    
+
     info "Updating $PLUGIN_NAME..."
     if ! (cd "$PLUGIN_PATH" && git pull origin "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo master)" && cd "$REPO_ROOT" && git add "$PLUGIN_PATH"); then
         error "Failed to update $PLUGIN_NAME"

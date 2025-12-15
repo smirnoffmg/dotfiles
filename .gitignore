@@ -96,3 +96,10 @@ raycast
 htop
 iterm2
 thefuck
+
+### Pre-commit ###
+# Security scan reports (should not be committed)
+bandit-report.json
+*.secrets.baseline.bak
+# Note: .secrets.baseline should be committed to share baseline across team
+node_modules

@@ -1,0 +1,10 @@
+# Gitleaks configuration
+# Exclude files that contain false positives
+
+[extend]
+# Use default rules
+useDefault = true
+
+[allowlist]
+description = "Allowlist for files with false positives"
+paths = ['''\.secrets\.baseline$''', '''nvim/lazy-lock\.json$''']

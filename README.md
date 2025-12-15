@@ -31,8 +31,7 @@ git submodule update --init --recursive
 ### Tmux Plugins
 
 Quick update command:
+
 ```bash
 ./tmux/update-plugins.sh
 ```
-
-

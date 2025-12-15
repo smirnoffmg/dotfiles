@@ -25,4 +25,3 @@ return { -- Catppuccin colorscheme for consistent theming
         colorscheme = "catppuccin"
     }
 }}
-
