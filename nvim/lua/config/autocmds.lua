@@ -68,6 +68,26 @@ autocmd("FileType", {
     desc = "Close certain windows with q"
 })
 
+-- Quickfix: Enter jumps to item and closes the window (e.g. after gd/references)
+autocmd("FileType", {
+    group = augroup("qf_enter_close", {
+        clear = true
+    }),
+    pattern = "qf",
+    callback = function(event)
+        vim.keymap.set("n", "<CR>", function()
+            local line = vim.fn.line(".")
+            pcall(vim.cmd, "cc " .. line)
+            pcall(vim.cmd, "lclose")
+            pcall(vim.cmd, "cclose")
+        end, {
+            buffer = event.buf,
+            silent = true
+        })
+    end,
+    desc = "Enter in qf: jump and close",
+})
+
 -- Set filetype-specific options
 autocmd("FileType", {
     group = augroup("filetype_settings", {
@@ -81,14 +101,62 @@ autocmd("FileType", {
     desc = "Set indent to 2 spaces for certain filetypes"
 })
 
+---@return string Path to Python interpreter (uv .venv or PATH)
+local function get_python_interpreter()
+    -- 1. Active virtualenv (VIRTUAL_ENV set when venv activated)
+    local venv = os.getenv("VIRTUAL_ENV")
+    if venv and venv ~= "" then
+        local python = venv .. "/bin/python"
+        if vim.fn.filereadable(python) == 1 then
+            return vim.fn.shellescape(python)
+        end
+    end
+
+    -- 2. Project .venv (uv default) - search upward from buffer
+    local buf_path = vim.api.nvim_buf_get_name(0)
+    if buf_path and buf_path ~= "" then
+        local root = vim.fs.dirname(buf_path)
+        while root and root ~= vim.fs.dirname(root) do
+            local candidate = root .. "/.venv/bin/python"
+            if vim.fn.filereadable(candidate) == 1 then
+                return vim.fn.shellescape(candidate)
+            end
+            root = vim.fs.dirname(root)
+        end
+    end
+
+    -- 3. Fallback: python3 from PATH
+    local python3 = vim.fn.exepath("python3")
+    if python3 and python3 ~= "" then
+        return vim.fn.shellescape(python3)
+    end
+    local python = vim.fn.exepath("python")
+    if python and python ~= "" then
+        return vim.fn.shellescape(python)
+    end
+    return "python3" -- last resort
+end
+
 autocmd("FileType", {
     group = augroup("filetype_python", {
         clear = true
     }),
     pattern = "python",
-    callback = function()
+    callback = function(event)
         vim.opt_local.shiftwidth = 4
         vim.opt_local.tabstop = 4
+        vim.keymap.set("n", "<leader>r", function()
+            vim.cmd("w")
+            local python = get_python_interpreter()
+            local file = vim.fn.expand("%:p")
+            local dir = vim.fn.fnamemodify(file, ":h")
+            vim.cmd("lcd " .. vim.fn.fnameescape(dir))
+            vim.cmd("!" .. python .. " " .. vim.fn.shellescape(file))
+            vim.cmd("lcd -")
+        end, {
+            buffer = event.buf,
+            desc = "Run current Python file",
+        })
     end,
     desc = "Set indent to 4 spaces for Python"
 })
@@ -104,6 +172,29 @@ autocmd("FileType", {
         vim.opt_local.tabstop = 4
     end,
     desc = "Use tabs for Go"
+})
+
+-- Format Python files with Ruff on save
+autocmd("BufWritePre", {
+    group = augroup("format_on_save_ruff", {
+        clear = true
+    }),
+    pattern = "*.py",
+    callback = function()
+        local clients = vim.lsp.get_clients({ bufnr = 0 })
+        for _, client in ipairs(clients) do
+            if client.name == "ruff" and client.supports_method("textDocument/formatting") then
+                vim.lsp.buf.format({
+                    async = false,
+                    filter = function(c)
+                        return c.name == "ruff"
+                    end,
+                })
+                break
+            end
+        end
+    end,
+    desc = "Format Python with Ruff on save",
 })
 
 -- Auto-create parent directories when saving a file
@@ -122,7 +213,7 @@ autocmd("BufWritePre", {
 })
 
 -- Disable auto-comment on new line
-autocmd("BufEnter", {
+autocmd({ "BufNewFile", "BufRead" }, {
     group = augroup("no_auto_comment", {
         clear = true
     }),

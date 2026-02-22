@@ -28,6 +28,11 @@ map("n", "<C-l>", "<C-w>l", {
     desc = "Go to right window"
 })
 
+-- Close current window (e.g. after gd definition jump)
+map("n", "<leader>wc", "<cmd>close<cr>", {
+    desc = "Close window"
+})
+
 -- Resize windows with arrows
 map("n", "<C-Up>", "<cmd>resize +2<cr>", {
     desc = "Increase window height"

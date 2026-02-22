@@ -103,3 +103,4 @@ bandit-report.json
 *.secrets.baseline.bak
 # Note: .secrets.baseline should be committed to share baseline across team
 node_modules
+far2l

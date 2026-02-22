@@ -46,7 +46,7 @@ opt.clipboard = "unnamedplus" -- Use system clipboard
 opt.undofile = true -- Persistent undo
 opt.undolevels = 10000 -- Maximum undo levels
 opt.updatetime = 200 -- Faster completion (default 4000ms)
-opt.timeoutlen = 300 -- Faster keymap timeout
+opt.timeoutlen = 500 -- Time for leader/multi-key sequences (ms)
 
 -- Splits
 opt.splitbelow = true -- Horizontal splits below current

@@ -14,6 +14,7 @@ return { -- Colorscheme
                 gitsigns = true,
                 treesitter = true,
                 notify = true,
+                neotree = true,
                 native_lsp = {
                     enabled = true
                 }
@@ -25,25 +26,36 @@ return { -- Colorscheme
 {
     "nvim-lua/plenary.nvim",
     lazy = true
-}, -- LSP Configuration
+}, -- LSP Configuration (Neovim 0.11+ vim.lsp.config API)
 {
     "neovim/nvim-lspconfig",
-    dependencies = {"williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim"},
-    config = function()
-        require("config.plugins.lsp")
-    end
-}, {
-    "williamboman/mason.nvim",
+    dependencies = {
+        "mason-org/mason.nvim",
+        "mason-org/mason-lspconfig.nvim",
+    },
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
         require("mason").setup()
-    end
-}, {
-    "williamboman/mason-lspconfig.nvim",
-    config = function()
         require("mason-lspconfig").setup({
-            ensure_installed = {"lua_ls", "pyright", "rust_analyzer", "gopls"}
+            ensure_installed = {}, -- Deferred to background below
         })
-    end
+        require("config.plugins.lsp")
+        -- Defer server installs to background (avoids blocking LSP setup)
+        vim.defer_fn(function()
+            local registry = require("mason-registry")
+            local lspconfig_to_package = require("mason-lspconfig.mappings").get_mason_map().lspconfig_to_package
+            local servers = { "lua_ls", "pylsp", "ruff", "rust_analyzer", "gopls" }
+            for _, name in ipairs(servers) do
+                local pkg_name = lspconfig_to_package[name]
+                if pkg_name then
+                    local ok, pkg = pcall(registry.get_package, pkg_name)
+                    if ok and not pkg:is_installed() and not pkg:is_installing() then
+                        pkg:install()
+                    end
+                end
+            end
+        end, 500)
+    end,
 }, -- Completion
 {
     "hrsh7th/nvim-cmp",
@@ -54,6 +66,7 @@ return { -- Colorscheme
     end
 }, {
     "L3MON4D3/LuaSnip",
+    submodules = false, -- Avoid jsregexp submodule clone errors
     dependencies = {"rafamadriz/friendly-snippets"},
     config = function()
         require("luasnip").setup({})
@@ -87,9 +100,25 @@ return { -- Colorscheme
     end
 }, -- File navigation
 {
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    dependencies = { "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
+    keys = {
+        { "<leader>e", "<cmd>Neotree toggle left<cr>", desc = "Toggle file explorer" },
+    },
+    config = function()
+        require("config.plugins.neotree")
+    end,
+}, {
     "nvim-telescope/telescope.nvim",
     branch = "0.1.x",
     dependencies = {"nvim-lua/plenary.nvim"},
+    keys = {
+        { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
+        { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
+        { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Find buffers" },
+        { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
+    },
     config = function()
         require("config.plugins.telescope")
     end
