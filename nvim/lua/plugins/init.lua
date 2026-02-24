@@ -14,7 +14,6 @@ return { -- Colorscheme
                 gitsigns = true,
                 treesitter = true,
                 notify = true,
-                neotree = true,
                 native_lsp = {
                     enabled = true
                 }
@@ -97,30 +96,6 @@ return { -- Colorscheme
     dependencies = {"nvim-tree/nvim-web-devicons"},
     config = function()
         require("config.plugins.lualine")
-    end
-}, -- File navigation
-{
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
-    dependencies = { "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
-    keys = {
-        { "<leader>e", "<cmd>Neotree toggle left<cr>", desc = "Toggle file explorer" },
-    },
-    config = function()
-        require("config.plugins.neotree")
-    end,
-}, {
-    "nvim-telescope/telescope.nvim",
-    branch = "0.1.x",
-    dependencies = {"nvim-lua/plenary.nvim"},
-    keys = {
-        { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
-        { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
-        { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Find buffers" },
-        { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
-    },
-    config = function()
-        require("config.plugins.telescope")
     end
 }, -- Git integration
 {

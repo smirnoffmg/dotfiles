@@ -22,11 +22,10 @@ nvim/
 
 - **Plugin Manager**: lazy.nvim
 - **Colorscheme**: Catppuccin (Macchiato)
-- **LSP**: nvim-lspconfig with Mason
+- **LSP**: nvim-lspconfig with Mason (lua_ls, pylsp, ruff, rust_analyzer, gopls)
 - **Completion**: nvim-cmp with LuaSnip
 - **Treesitter**: Syntax highlighting and more
-- **Telescope**: File navigation and search
-- **UI**: Bufferline, Lualine, and more
+- **UI**: Bufferline, Lualine, indent guides, notifications
 
 ## Installation
 
@@ -37,8 +36,12 @@ nvim/
 ## Key Mappings
 
 - `<leader>` = Space
-- `<leader>ff` - Find files (Telescope)
-- `<leader>fg` - Live grep (Telescope)
 - `gd` - Go to definition (LSP)
 - `K` - Hover (LSP)
 - `<leader>vca` - Code actions (LSP)
+- `<leader>vrr` - References (LSP)
+- `<leader>vrn` - Rename (LSP)
+- `<S-h>` / `<S-l>` - Previous/next buffer
+- `<leader>bd` - Delete buffer
+- `<leader>w` - Save file
+- `<leader>q` - Quit
