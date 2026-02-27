@@ -28,22 +28,19 @@ return { -- Colorscheme
 }, -- LSP Configuration (Neovim 0.11+ vim.lsp.config API)
 {
     "neovim/nvim-lspconfig",
-    dependencies = {
-        "mason-org/mason.nvim",
-        "mason-org/mason-lspconfig.nvim",
-    },
-    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {"mason-org/mason.nvim", "mason-org/mason-lspconfig.nvim"},
+    event = {"BufReadPre", "BufNewFile"},
     config = function()
         require("mason").setup()
         require("mason-lspconfig").setup({
-            ensure_installed = {}, -- Deferred to background below
+            ensure_installed = {} -- Deferred to background below
         })
         require("config.plugins.lsp")
         -- Defer server installs to background (avoids blocking LSP setup)
         vim.defer_fn(function()
             local registry = require("mason-registry")
             local lspconfig_to_package = require("mason-lspconfig.mappings").get_mason_map().lspconfig_to_package
-            local servers = { "lua_ls", "pylsp", "ruff", "rust_analyzer", "gopls" }
+            local servers = {"lua_ls", "pylsp", "ruff", "rust_analyzer", "gopls"}
             for _, name in ipairs(servers) do
                 local pkg_name = lspconfig_to_package[name]
                 if pkg_name then
@@ -54,7 +51,7 @@ return { -- Colorscheme
                 end
             end
         end, 500)
-    end,
+    end
 }, -- Completion
 {
     "hrsh7th/nvim-cmp",
@@ -80,6 +77,17 @@ return { -- Colorscheme
     build = ":TSUpdate",
     config = function()
         require("config.plugins.treesitter")
+    end
+}, -- Telescope (fuzzy finder)
+{
+    "nvim-telescope/telescope.nvim",
+    lazy = false,
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    },
+    config = function()
+        require("config.plugins.telescope")
     end
 }, -- UI Enhancements
 {
@@ -133,5 +141,12 @@ return { -- Colorscheme
     "rcarriga/nvim-notify",
     config = function()
         vim.notify = require("notify")
+    end
+}, {
+    "ThePrimeagen/refactoring.nvim",
+    dependencies = {"nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter"},
+    lazy = false,
+    config = function()
+        require("config.plugins.refactoring")
     end
 }}

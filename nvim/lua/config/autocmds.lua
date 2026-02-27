@@ -145,7 +145,7 @@ autocmd("FileType", {
     callback = function(event)
         vim.opt_local.shiftwidth = 4
         vim.opt_local.tabstop = 4
-        vim.keymap.set("n", "<leader>r", function()
+        vim.keymap.set("n", "<leader>R", function()
             vim.cmd("w")
             local python = get_python_interpreter()
             local file = vim.fn.expand("%:p")
