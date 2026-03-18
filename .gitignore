@@ -104,3 +104,6 @@ bandit-report.json
 # Note: .secrets.baseline should be committed to share baseline across team
 node_modules
 far2l
+zsh/.zcompdump*
+zsh/.zsh_history
+zsh/.zsh_sessions/
