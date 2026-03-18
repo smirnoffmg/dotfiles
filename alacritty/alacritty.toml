@@ -1,5 +1,4 @@
-# Alacritty Configuration
-# Theme: Catppuccin Macchiato (matching tmux and neovim)
+# Catppuccin Macchiato theme
 
 [general]
 live_config_reload = true
@@ -7,7 +6,7 @@ live_config_reload = true
 [env]
 TERM = "xterm-256color"
 
-# Catppuccin Macchiato Colors
+# Colors
 [colors.primary]
 background = "#24273a"
 foreground = "#cad3f5"
@@ -72,7 +71,7 @@ magenta = "#f5bde6"
 cyan = "#8bd5ca"
 white = "#b8c0e0"
 
-# Font Configuration
+# Font
 [font]
 size = 18.0
 
@@ -92,14 +91,6 @@ style = "Italic"
 family = "FiraCode Nerd Font"
 style = "Bold Italic"
 
-[font.glyph_offset]
-x = 0
-y = 0
-
-[font.offset]
-x = 0
-y = 0
-
 # Scrolling
 [scrolling]
 history = 10000
@@ -110,20 +101,14 @@ multiplier = 4
 save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>"
 
-# Terminal Shell
+# Shell
 [terminal.shell]
 program = "/bin/zsh"
-args = ["-l", "-c", "tmux attach || tmux"]
-
-[terminal]
+args = ["-l"]
 
 # Window
 [window]
 startup_mode = "Maximized"
-
-[window.dimensions]
-columns = 90
-lines = 25
 
 [window.padding]
 x = 2
