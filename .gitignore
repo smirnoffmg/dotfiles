@@ -96,6 +96,8 @@ raycast
 htop
 iterm2
 thefuck
+marimo
+mlflow
 
 ### Pre-commit ###
 # Security scan reports (should not be committed)
