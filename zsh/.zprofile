@@ -4,7 +4,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # rbenv
 eval "$(rbenv init - --no-rehash zsh)"
 
-# Java (cached — doesn't change between shells)
+# Java
 export JAVA_HOME=$(/usr/libexec/java_home -v 11 2>/dev/null || echo "/opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk")
 export PATH="$JAVA_HOME/bin:$PATH"
 

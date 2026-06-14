@@ -19,12 +19,9 @@ eval "$(pyenv virtualenv-init - --no-rehash)"
 # --- FZF ---
 source <(fzf --zsh)
 
-# --- NVM (lazy-loaded) ---
-export NVM_DIR="$HOME/.nvm"
-nvm()  { unset -f nvm node npm npx; [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"; nvm "$@"; }
-node() { nvm use default >/dev/null 2>&1; unset -f node 2>/dev/null; command node "$@"; }
-npm()  { nvm use default >/dev/null 2>&1; unset -f npm 2>/dev/null;  command npm "$@"; }
-npx()  { nvm use default >/dev/null 2>&1; unset -f npx 2>/dev/null;  command npx "$@"; }
+# --- NVM ---
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # --- Go ---
 export GOPATH="$HOME/go"

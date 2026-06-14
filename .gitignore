@@ -109,3 +109,7 @@ far2l
 zsh/.zcompdump*
 zsh/.zsh_history
 zsh/.zsh_sessions/
+
+gh
+git
+CLAUDE.md
