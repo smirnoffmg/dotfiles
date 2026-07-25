@@ -14,6 +14,7 @@ return { -- Colorscheme
                 gitsigns = true,
                 treesitter = true,
                 notify = true,
+                indent_blankline = true,
                 native_lsp = {
                     enabled = true
                 }
@@ -121,10 +122,9 @@ return { -- Colorscheme
 {
     "lukas-reineke/indent-blankline.nvim",
     config = function()
-        require("indent_blankline").setup({
-            show_current_context = true,
-            show_current_context_start = true
-        })
+        -- No options: v2's show_current_context/show_current_context_start are
+        -- v3 defaults (scope.enabled, scope.show_start).
+        require("ibl").setup()
     end
 }, -- Auto pairs
 {
