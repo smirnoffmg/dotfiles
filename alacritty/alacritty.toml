@@ -83,13 +83,18 @@ style = "Regular"
 family = "FiraCode Nerd Font"
 style = "Bold"
 
+# FiraCode ships no italic face; Alacritty would silently fall back to Regular.
+# JetBrains Mono has a drawn italic and the same 600/1000 advance width.
 [font.italic]
-family = "FiraCode Nerd Font"
+family = "JetBrains Mono"
 style = "Italic"
 
 [font.bold_italic]
-family = "FiraCode Nerd Font"
+family = "JetBrains Mono"
 style = "Bold Italic"
+
+[font.offset]
+y = 2
 
 # Scrolling
 [scrolling]
@@ -109,6 +114,7 @@ args = ["-l"]
 # Window
 [window]
 startup_mode = "Maximized"
+dynamic_padding = true
 
 [window.padding]
 x = 2

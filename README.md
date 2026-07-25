@@ -21,9 +21,18 @@ cd ~/.config
 
 ln -s ~/.config/zsh/.zshenv ~/.zshenv   # the single activation point for zsh
 pre-commit install                       # secret-scanning hooks
+
+defaults write org.alacritty AppleFontSmoothing -int 0   # see below
 ```
 
 If you cloned without `--recurse-submodules`, run `git submodule update --init --recursive`.
+
+That `defaults` call is the one piece of terminal setup no file in this repo can carry.
+Alacritty dropped `font.use_thin_strokes` in 0.11 and now follows the macOS `AppleFontSmoothing`
+default instead; left unset, macOS thickens light-on-dark text. `0` disables smoothing, `1`–`2`
+are lighter variants, and `defaults delete org.alacritty AppleFontSmoothing` restores system
+behaviour. It is read at process start, so Alacritty must be restarted — `live_config_reload`
+does not apply.
 
 `pre-commit` and `detect-secrets` resolve through pyenv shims. If `pre-commit` suddenly
 "disappears", check the active pyenv version before reinstalling anything.
