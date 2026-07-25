@@ -1,115 +1,43 @@
-### Linux ###
-*~
+# Allowlist, not a denylist.
+#
+# This repo is versioned directly at ~/.config, where applications create new
+# state directories on their own schedule. Under a denylist every one of them
+# is untracked-but-committable until someone remembers to exclude it — that is
+# how a directory holding a live IAM token nearly got committed. Here anything
+# new is ignored by default and has to be named to be tracked.
 
-# temporary files which can be created if a process still has a handle open of a deleted file
-.fuse_hidden*
+*
 
-# KDE directory preferences
-.directory
+# Repo metadata and tooling
+!.gitignore
+!.gitleaks.toml
+!.gitmodules
+!.pre-commit-config.yaml
+# Shared baseline for detect-secrets — belongs in the repo
+!.secrets.baseline
+!README.md
+!doctor.sh
 
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
+# Tracked tool configs. Both the directory and its contents need re-including:
+# git does not descend into an excluded directory, so `!nvim/**` alone is inert.
+!alacritty/
+!alacritty/**
+!nvim/
+!nvim/**
+!opencode/
+!opencode/**
+!tmux/
+!tmux/**
+!zsh/
+!zsh/**
 
-# .nfs files are created when an open file is removed but is still being accessed
-.nfs*
+# Machine-local overrides — keys, work-specific PATH and aliases. Never tracked.
+zsh/*.local
 
-### macOS ###
-# General
-.DS_Store
-.AppleDouble
-.LSOverride
+# Claude Code drops per-directory state inside the trees above
+.claude/
 
-# Icon must end with two \r
-Icon
-
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-### macOS Patch ###
-# iCloud generated files
-*.icloud
-
-### VisualStudioCode ###
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-
-# Local History for Visual Studio Code
-.history/
-
-# Built Visual Studio Code Extensions
-*.vsix
-
-### VisualStudioCode Patch ###
-# Ignore all local history of files
-.history
-.ionide
-
-### Windows ###
-# Windows thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-
-# Dump file
-*.stackdump
-
-# Folder config file
-[Dd]esktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-
-raycast
-htop
-iterm2
-thefuck
-marimo
-mlflow
-
-### Pre-commit ###
-# Security scan reports (should not be committed)
-bandit-report.json
-*.secrets.baseline.bak
-# Note: .secrets.baseline should be committed to share baseline across team
-node_modules
-far2l
+# zsh runtime artifacts
 zsh/.zcompdump*
 zsh/.zsh_history
 zsh/.zsh_sessions/
-
-gh
-git
-CLAUDE.md
