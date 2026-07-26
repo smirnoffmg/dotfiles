@@ -75,6 +75,8 @@ return { -- Colorscheme
 }, -- Treesitter
 {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false, -- main branch does not support lazy-loading
     build = ":TSUpdate",
     config = function()
         require("config.plugins.treesitter")

@@ -25,26 +25,26 @@ nvim/
 
 ## Plugins
 
-| Category       | Plugin                                                                          | Description                                            |
-| -------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Plugin Manager | [lazy.nvim](https://github.com/folke/lazy.nvim)                                 | Plugin manager (bootstrapped in `lazy.lua`)            |
-| Colorscheme    | [catppuccin](https://github.com/catppuccin/nvim)                                | Catppuccin Macchiato theme                             |
-| LSP            | [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)                      | LSP configuration (Neovim 0.11+ `vim.lsp.config` API)  |
-| LSP            | [mason.nvim](https://github.com/mason-org/mason.nvim)                           | Portable package manager for LSP servers               |
-| LSP            | [mason-lspconfig](https://github.com/mason-org/mason-lspconfig.nvim)            | Bridge between Mason and lspconfig                     |
-| Completion     | [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)                                 | Completion engine (LSP, buffer, path, snippet sources) |
-| Snippets       | [LuaSnip](https://github.com/L3MON4D3/LuaSnip)                                  | Snippet engine                                         |
-| Snippets       | [friendly-snippets](https://github.com/rafamadriz/friendly-snippets)            | VS Code-style snippet collection                       |
-| Treesitter     | [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)           | Syntax highlighting, text objects, and more            |
-| UI             | [bufferline.nvim](https://github.com/akinsho/bufferline.nvim)                   | Buffer tab bar                                         |
-| UI             | [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)                    | Statusline                                             |
-| UI             | [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons)             | File type icons                                        |
-| UI             | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | Indentation guides with scope highlighting             |
-| UI             | [nvim-notify](https://github.com/rcarriga/nvim-notify)                          | Notification manager                                   |
-| Git            | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)                     | Git decorations and hunk actions                       |
-| Editing        | [Comment.nvim](https://github.com/numToStr/Comment.nvim)                        | Toggle comments (`gc` / `gcc`)                         |
-| Editing        | [nvim-autopairs](https://github.com/windwp/nvim-autopairs)                      | Auto-close brackets/quotes (integrated with nvim-cmp)  |
-| Utility        | [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)                        | Lua utility library                                    |
+| Category       | Plugin                                                                          | Description                                                  |
+| -------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Plugin Manager | [lazy.nvim](https://github.com/folke/lazy.nvim)                                 | Plugin manager (bootstrapped in `lazy.lua`)                  |
+| Colorscheme    | [catppuccin](https://github.com/catppuccin/nvim)                                | Catppuccin Macchiato theme                                   |
+| LSP            | [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)                      | LSP configuration (Neovim 0.11+ `vim.lsp.config` API)        |
+| LSP            | [mason.nvim](https://github.com/mason-org/mason.nvim)                           | Portable package manager for LSP servers                     |
+| LSP            | [mason-lspconfig](https://github.com/mason-org/mason-lspconfig.nvim)            | Bridge between Mason and lspconfig                           |
+| Completion     | [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)                                 | Completion engine (LSP, buffer, path, snippet sources)       |
+| Snippets       | [LuaSnip](https://github.com/L3MON4D3/LuaSnip)                                  | Snippet engine                                               |
+| Snippets       | [friendly-snippets](https://github.com/rafamadriz/friendly-snippets)            | VS Code-style snippet collection                             |
+| Treesitter     | [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)           | Parsers and queries (`main` branch); needs `tree-sitter` CLI |
+| UI             | [bufferline.nvim](https://github.com/akinsho/bufferline.nvim)                   | Buffer tab bar                                               |
+| UI             | [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)                    | Statusline                                                   |
+| UI             | [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons)             | File type icons                                              |
+| UI             | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | Indentation guides with scope highlighting                   |
+| UI             | [nvim-notify](https://github.com/rcarriga/nvim-notify)                          | Notification manager                                         |
+| Git            | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)                     | Git decorations and hunk actions                             |
+| Editing        | [Comment.nvim](https://github.com/numToStr/Comment.nvim)                        | Toggle comments (`gc` / `gcc`)                               |
+| Editing        | [nvim-autopairs](https://github.com/windwp/nvim-autopairs)                      | Auto-close brackets/quotes (integrated with nvim-cmp)        |
+| Utility        | [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)                        | Lua utility library                                          |
 
 ### LSP Servers
 

@@ -71,6 +71,6 @@ opt.grepprg = "rg --vimgrep" -- Use ripgrep for grep
 
 -- Folding (using treesitter)
 opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opt.foldlevel = 99 -- Start with all folds open
 opt.foldenable = true
