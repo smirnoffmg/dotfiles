@@ -1,0 +1,9 @@
+# Keeps the actions pinned in workflows/ci.yml current. Other "dependencies"
+# in this repo (pre-commit hook revs, tmux submodules) are pinned deliberately
+# and bumped by hand — see CLAUDE.md's known open items.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
