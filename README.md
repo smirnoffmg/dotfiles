@@ -16,18 +16,20 @@ Theme across every tool is Catppuccin Macchiato.
 ## Setup on a new machine
 
 ```bash
-git clone --recurse-submodules <repository-url> ~/.config
-cd ~/.config
-
-ln -s ~/.config/zsh/.zshenv ~/.zshenv   # the single activation point for zsh
-pre-commit install                       # secret-scanning hooks
-
-defaults write org.alacritty AppleFontSmoothing -int 0   # see below
+git clone <repository-url> ~/.config
+~/.config/bootstrap.sh
 ```
 
-If you cloned without `--recurse-submodules`, run `git submodule update --init --recursive`.
+`bootstrap.sh` is idempotent — every step checks state before acting, so re-running after a
+failure is safe. It installs Homebrew and the brew packages (neovim, tmux, fzf, eza, alacritty,
+the fonts), the toolchains through their version managers (pyenv python, rbenv ruby, nvm node,
+rustup — `path.zsh` puts the managers above brew, so a brew python or rust would be dead
+weight), `pre-commit` + `detect-secrets` into the pyenv python, clones oh-my-zsh /
+zsh-autosuggestions / powerlevel10k where `.zshrc` expects them, links `~/.zshenv` into the
+repo, initializes the tmux plugin submodules, installs the commit hooks, restores nvim plugins
+from `lazy-lock.json`, and finishes by running `./doctor.sh` as verification.
 
-That `defaults` call is the one piece of terminal setup no file in this repo can carry.
+One `defaults` call it also carries: `defaults write org.alacritty AppleFontSmoothing -int 0`.
 Alacritty dropped `font.use_thin_strokes` in 0.11 and now follows the macOS `AppleFontSmoothing`
 default instead; left unset, macOS thickens light-on-dark text. `0` disables smoothing, `1`–`2`
 are lighter variants, and `defaults delete org.alacritty AppleFontSmoothing` restores system

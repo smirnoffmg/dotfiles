@@ -16,6 +16,7 @@
 # Shared baseline for detect-secrets — belongs in the repo
 !.secrets.baseline
 !README.md
+!bootstrap.sh
 !doctor.sh
 
 # Tracked tool configs. Both the directory and its contents need re-including:
