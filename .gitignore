@@ -9,6 +9,8 @@
 *
 
 # Repo metadata and tooling
+!.github/
+!.github/**
 !.gitignore
 !.gitleaks.toml
 !.gitmodules

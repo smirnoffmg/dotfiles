@@ -1,0 +1,37 @@
+# Backstop for the local hooks: they only run on clones where `pre-commit
+# install` happened, and `--no-verify` bypasses them entirely. Anything that
+# reaches GitHub gets scanned here regardless.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: pip install pre-commit
+      - run: pre-commit run --all-files --show-diff-on-failure
+
+  # The pre-commit gitleaks hook scans only the staged diff, which is empty in
+  # an --all-files run — this job scans the entire history instead.
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks (same version as the pre-commit hook)
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.0/gitleaks_8.30.0_linux_x64.tar.gz \
+            | sudo tar -xz -C /usr/local/bin gitleaks
+      - run: gitleaks git --no-banner --config .gitleaks.toml .
