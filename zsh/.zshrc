@@ -8,7 +8,11 @@ fi
 # --- Oh My Zsh ---
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""  # disabled — p10k loaded below
-zstyle ':omz:update' mode auto
+# No self-updating: omz is the one dependency layer with no lockfile, and an
+# auto-update can break the shell with nothing in this repo's git log to blame.
+# Update deliberately with `omz update`, then record the new commit in
+# bootstrap.sh (OMZ_REF).
+zstyle ':omz:update' mode disabled
 plugins=(git zsh-autosuggestions)
 source "$ZSH/oh-my-zsh.sh"
 
@@ -19,7 +23,9 @@ source "$ZSH/oh-my-zsh.sh"
 # and completions, which a non-interactive shell has no use for.
 # rbenv first, so pyenv's shims end up ahead of it.
 eval "$(rbenv init - --no-rehash zsh)"
-eval "$(pyenv init - --no-rehash)"
+# Inside an activated virtualenv, pushing the shims would put them ahead of the
+# venv's bin and `python` would stop resolving to the venv.
+eval "$(pyenv init - --no-rehash ${VIRTUAL_ENV:+--no-push-path})"
 eval "$(pyenv virtualenv-init - --no-rehash)"
 
 # --- FZF ---

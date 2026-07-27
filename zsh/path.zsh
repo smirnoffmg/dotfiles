@@ -49,11 +49,18 @@ export NVM_DIR="$HOME/.nvm"
 # nvm.sh is far too slow to source here, so resolve the default version's bin
 # directory by hand — otherwise scripts and cron jobs get no node at all.
 # `alias/default` holds whatever `nvm alias default` was given ("22", "v22.17.1",
-# "lts/jod"), so match it as a prefix and take the highest version installed.
-# Interactive shells still source nvm.sh in .zshrc, which wins by re-prepending.
+# "lts/jod"). Named aliases are themselves files under alias/ holding the real
+# version, so dereference them first (bounded: aliases can chain, e.g.
+# default → lts/* → version), then match as a prefix and take the highest
+# version installed. Interactive shells still source nvm.sh in .zshrc, which
+# wins by re-prepending.
 _nvm_bin=()
 if [[ -r $NVM_DIR/alias/default ]]; then
   _nvm_default=$(<$NVM_DIR/alias/default)
+  for _ in 1 2 3; do
+    [[ -r $NVM_DIR/alias/$_nvm_default ]] || break
+    _nvm_default=$(<$NVM_DIR/alias/$_nvm_default)
+  done
   _nvm_bin=($NVM_DIR/versions/node/v${_nvm_default#v}*/bin(Nn[-1]))
   unset _nvm_default
 fi
