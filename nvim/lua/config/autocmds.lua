@@ -5,31 +5,31 @@ local autocmd = vim.api.nvim_create_autocmd
 -- Highlight yanked text
 autocmd("TextYankPost", {
     group = augroup("highlight_yank", {
-        clear = true
+        clear = true,
     }),
     callback = function()
         vim.highlight.on_yank({
             higroup = "IncSearch",
-            timeout = 200
+            timeout = 200,
         })
     end,
-    desc = "Highlight yanked text"
+    desc = "Highlight yanked text",
 })
 
 -- Remove trailing whitespace on save
 autocmd("BufWritePre", {
     group = augroup("trim_whitespace", {
-        clear = true
+        clear = true,
     }),
     pattern = "*",
     command = [[%s/\s\+$//e]],
-    desc = "Remove trailing whitespace"
+    desc = "Remove trailing whitespace",
 })
 
 -- Return to last edit position when opening files
 autocmd("BufReadPost", {
     group = augroup("restore_cursor", {
-        clear = true
+        clear = true,
     }),
     callback = function()
         local mark = vim.api.nvim_buf_get_mark(0, '"')
@@ -38,40 +38,40 @@ autocmd("BufReadPost", {
             pcall(vim.api.nvim_win_set_cursor, 0, mark)
         end
     end,
-    desc = "Return to last cursor position"
+    desc = "Return to last cursor position",
 })
 
 -- Auto-resize splits when terminal window is resized
 autocmd("VimResized", {
     group = augroup("resize_splits", {
-        clear = true
+        clear = true,
     }),
     callback = function()
         vim.cmd("tabdo wincmd =")
     end,
-    desc = "Resize splits on window resize"
+    desc = "Resize splits on window resize",
 })
 
 -- Close certain filetypes with 'q'
 autocmd("FileType", {
     group = augroup("close_with_q", {
-        clear = true
+        clear = true,
     }),
-    pattern = {"help", "lspinfo", "man", "notify", "qf", "checkhealth", "startuptime"},
+    pattern = { "help", "lspinfo", "man", "notify", "qf", "checkhealth", "startuptime" },
     callback = function(event)
         vim.bo[event.buf].buflisted = false
         vim.keymap.set("n", "q", "<cmd>close<cr>", {
             buffer = event.buf,
-            silent = true
+            silent = true,
         })
     end,
-    desc = "Close certain windows with q"
+    desc = "Close certain windows with q",
 })
 
 -- Quickfix: Enter jumps to item and closes the window (e.g. after gd/references)
 autocmd("FileType", {
     group = augroup("qf_enter_close", {
-        clear = true
+        clear = true,
     }),
     pattern = "qf",
     callback = function(event)
@@ -82,7 +82,7 @@ autocmd("FileType", {
             pcall(vim.cmd, "cclose")
         end, {
             buffer = event.buf,
-            silent = true
+            silent = true,
         })
     end,
     desc = "Enter in qf: jump and close",
@@ -91,14 +91,14 @@ autocmd("FileType", {
 -- Set filetype-specific options
 autocmd("FileType", {
     group = augroup("filetype_settings", {
-        clear = true
+        clear = true,
     }),
-    pattern = {"lua", "json", "yaml", "javascript", "typescript", "typescriptreact"},
+    pattern = { "lua", "json", "yaml", "javascript", "typescript", "typescriptreact" },
     callback = function()
         vim.opt_local.shiftwidth = 2
         vim.opt_local.tabstop = 2
     end,
-    desc = "Set indent to 2 spaces for certain filetypes"
+    desc = "Set indent to 2 spaces for certain filetypes",
 })
 
 ---@return string Path to Python interpreter (uv .venv or PATH)
@@ -139,7 +139,7 @@ end
 
 autocmd("FileType", {
     group = augroup("filetype_python", {
-        clear = true
+        clear = true,
     }),
     pattern = "python",
     callback = function(event)
@@ -158,12 +158,12 @@ autocmd("FileType", {
             desc = "Run current Python file",
         })
     end,
-    desc = "Set indent to 4 spaces for Python"
+    desc = "Set indent to 4 spaces for Python",
 })
 
 autocmd("FileType", {
     group = augroup("filetype_go", {
-        clear = true
+        clear = true,
     }),
     pattern = "go",
     callback = function()
@@ -171,13 +171,13 @@ autocmd("FileType", {
         vim.opt_local.shiftwidth = 4
         vim.opt_local.tabstop = 4
     end,
-    desc = "Use tabs for Go"
+    desc = "Use tabs for Go",
 })
 
 -- Format Python files with Ruff on save
 autocmd("BufWritePre", {
     group = augroup("format_on_save_ruff", {
-        clear = true
+        clear = true,
     }),
     pattern = "*.py",
     callback = function()
@@ -200,7 +200,7 @@ autocmd("BufWritePre", {
 -- Auto-create parent directories when saving a file
 autocmd("BufWritePre", {
     group = augroup("auto_mkdir", {
-        clear = true
+        clear = true,
     }),
     callback = function(event)
         if event.match:match("^%w%w+://") then
@@ -209,25 +209,25 @@ autocmd("BufWritePre", {
         local file = vim.loop.fs_realpath(event.match) or event.match
         vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
     end,
-    desc = "Auto-create parent directories"
+    desc = "Auto-create parent directories",
 })
 
 -- Disable auto-comment on new line
 autocmd({ "BufNewFile", "BufRead" }, {
     group = augroup("no_auto_comment", {
-        clear = true
+        clear = true,
     }),
     callback = function()
-        vim.opt.formatoptions:remove({"c", "r", "o"})
+        vim.opt.formatoptions:remove({ "c", "r", "o" })
     end,
-    desc = "Disable auto-comment on new line"
+    desc = "Disable auto-comment on new line",
 })
 
 -- Check if file changed outside of Neovim
-autocmd({"FocusGained", "TermClose", "TermLeave"}, {
+autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
     group = augroup("checktime", {
-        clear = true
+        clear = true,
     }),
     command = "checktime",
-    desc = "Check if file changed externally"
+    desc = "Check if file changed externally",
 })

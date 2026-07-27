@@ -6,7 +6,7 @@ cmp.setup({
     snippet = {
         expand = function(args)
             luasnip.lsp_expand(args.body)
-        end
+        end,
     },
     mapping = cmp.mapping.preset.insert({
         ["<C-p>"] = cmp.mapping.select_prev_item(),
@@ -16,7 +16,7 @@ cmp.setup({
         ["<C-Space>"] = cmp.mapping.complete({}),
         ["<CR>"] = cmp.mapping.confirm({
             behavior = cmp.ConfirmBehavior.Replace,
-            select = true
+            select = true,
         }),
         ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
@@ -26,7 +26,7 @@ cmp.setup({
             else
                 fallback()
             end
-        end, {"i", "s"}),
+        end, { "i", "s" }),
         ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
@@ -35,15 +35,20 @@ cmp.setup({
             else
                 fallback()
             end
-        end, {"i", "s"})
+        end, { "i", "s" }),
     }),
-    sources = {{
-        name = "nvim_lsp"
-    }, {
-        name = "luasnip"
-    }, {
-        name = "buffer"
-    }, {
-        name = "path"
-    }}
+    sources = {
+        {
+            name = "nvim_lsp",
+        },
+        {
+            name = "luasnip",
+        },
+        {
+            name = "buffer",
+        },
+        {
+            name = "path",
+        },
+    },
 })
