@@ -29,12 +29,12 @@ OMZ_REF=b37dd49ca5bfe0d99b35607637152cb8cc8b29d7
 AUTOSUGGESTIONS_REF=c3d4e576c9c86eac62884bd47c01f6faed043fc5
 P10K_REF=62341054d8aa40ade03fc55bdbc95b9ff2d8d2b6
 
-step() { print -r -- $'\n'"==> $1" }
-have() { command -v $1 >/dev/null 2>&1 }
+step() { print -r -- $'\n'"==> $1"; }
+have() { command -v $1 >/dev/null 2>&1; }
 
 # Shallow-fetch an exact commit — GitHub allows fetching arbitrary shas, and
 # `clone --depth=1` can only pin branches/tags.
-clone_pinned() {  # <url> <dest> <sha>
+clone_pinned() { # <url> <dest> <sha>
   [[ -d $2 ]] && return 0
   git init -q "$2"
   git -C "$2" fetch -q --depth=1 "$1" "$3"
@@ -57,9 +57,15 @@ if ! have brew; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 for _p in /opt/homebrew /usr/local; do
-  [[ -x $_p/bin/brew ]] && { eval "$($_p/bin/brew shellenv)"; break }
+  [[ -x $_p/bin/brew ]] && {
+    eval "$($_p/bin/brew shellenv)"
+    break
+  }
 done
-have brew || { print -ru2 -- "brew still not on PATH after install"; exit 1 }
+have brew || {
+  print -ru2 -- "brew still not on PATH after install"
+  exit 1
+}
 
 step "Brew packages"
 # Per package, so one renamed/discontinued formula doesn't abort the whole run —
@@ -71,7 +77,7 @@ done
 for _pkg in alacritty font-fira-code-nerd-font font-jetbrains-mono; do
   brew install --cask "$_pkg" || _failed+=("$_pkg")
 done
-if (( $#_failed )); then
+if (($#_failed)); then
   print -ru2 -- "brew could not install: $_failed — continuing, doctor.sh will show the damage"
 fi
 
@@ -80,8 +86,8 @@ defaults write org.alacritty AppleFontSmoothing -int 0
 
 step "Rust (rustup, not brew rust — brew's would shadow rustup default)"
 if [[ ! -x $HOME/.cargo/bin/cargo ]]; then
-  curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs \
-    | sh -s -- -y --no-modify-path
+  curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs |
+    sh -s -- -y --no-modify-path
 fi
 
 step "Python $PYTHON_SERIES via pyenv"

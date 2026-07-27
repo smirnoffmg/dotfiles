@@ -11,8 +11,8 @@ fi
 # parent shell already paid for it
 if [[ -z $JAVA_HOME ]]; then
   export JAVA_HOME="$(/usr/libexec/java_home -v 11 2>/dev/null)"
-  [[ -z $JAVA_HOME && -d $HOMEBREW_PREFIX/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home ]] \
-    && export JAVA_HOME="$HOMEBREW_PREFIX/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home"
+  [[ -z $JAVA_HOME && -d $HOMEBREW_PREFIX/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home ]] &&
+    export JAVA_HOME="$HOMEBREW_PREFIX/opt/openjdk@11/libexec/openjdk.jdk/Contents/Home"
   [[ -n $JAVA_HOME ]] && path=($JAVA_HOME/bin $path)
 fi
 
