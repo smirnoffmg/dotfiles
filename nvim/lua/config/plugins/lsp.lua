@@ -1,7 +1,7 @@
 -- LSP Configuration (Neovim 0.11+ vim.lsp.config API)
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
--- Disable Ruff hover so pylsp handles it (pylsp + Ruff run together on Python)
+-- Disable Ruff hover so pyright handles it (pyright + Ruff run together on Python)
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("lsp_ruff_disable_hover", { clear = true }),
     callback = function(args)
@@ -10,7 +10,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
             client.server_capabilities.hoverProvider = false
         end
     end,
-    desc = "Disable Ruff hover in favor of pylsp",
+    desc = "Disable Ruff hover in favor of pyright",
 })
 
 -- Global LSP defaults (capabilities + on_attach for all servers)
@@ -40,5 +40,8 @@ vim.lsp.config("lua_ls", {
     },
 })
 
--- Enable all servers (mason-lspconfig installs them, we enable for filetypes)
-vim.lsp.enable({ "lua_ls", "pylsp", "ruff", "rust_analyzer", "gopls" })
+-- Enable all servers (mason-lspconfig installs them, we enable for filetypes).
+-- Python is split deliberately: ruff lints and formats, pyright does types,
+-- hover and completion. pylsp is not enabled — its pycodestyle reports E501 at
+-- 79 columns against Ruff's 88, a warning that can never be satisfied.
+vim.lsp.enable({ "lua_ls", "pyright", "ruff", "rust_analyzer", "gopls" })
