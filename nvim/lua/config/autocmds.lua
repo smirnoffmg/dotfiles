@@ -22,7 +22,17 @@ autocmd("BufWritePre", {
         clear = true,
     }),
     pattern = "*",
-    command = [[%s/\s\+$//e]],
+    callback = function(event)
+        -- writing a non-modifiable buffer (`:w` from checkhealth, help, …) would
+        -- otherwise abort with E21
+        if not vim.bo[event.buf].modifiable then
+            return
+        end
+        local view = vim.fn.winsaveview()
+        -- keeppatterns keeps \s\+$ out of the search register and off hlsearch
+        vim.cmd([[keeppatterns %s/\s\+$//e]])
+        vim.fn.winrestview(view)
+    end,
     desc = "Remove trailing whitespace",
 })
 
@@ -166,35 +176,113 @@ autocmd("FileType", {
         clear = true,
     }),
     pattern = "go",
-    callback = function()
+    callback = function(event)
         vim.opt_local.expandtab = false
         vim.opt_local.shiftwidth = 4
         vim.opt_local.tabstop = 4
+
+        vim.keymap.set("n", "<leader>R", function()
+            vim.cmd("w")
+            local dir = vim.fn.expand("%:p:h")
+            local is_main = vim.tbl_contains(vim.api.nvim_buf_get_lines(event.buf, 0, 20, false), "package main")
+            vim.cmd("lcd " .. vim.fn.fnameescape(dir))
+            -- a leetcode package has no entry point; its tests are the way to run it
+            vim.cmd("!" .. (is_main and "go run ." or "go test ./"))
+            vim.cmd("lcd -")
+        end, {
+            buffer = event.buf,
+            desc = "Run current Go file (go run / go test)",
+        })
     end,
     desc = "Use tabs for Go",
 })
 
--- Format Python files with Ruff on save
+--- Run a "source.*" code action to completion before a write.
+--- @param bufnr integer
+--- @param client_name string only this server's actions are applied
+--- @param kind string LSP code action kind
+local function apply_source_action(bufnr, client_name, kind)
+    local params = {
+        textDocument = vim.lsp.util.make_text_document_params(bufnr),
+        -- source.* actions apply to the whole file, so the range is ignored
+        range = { start = { line = 0, character = 0 }, ["end"] = { line = 0, character = 0 } },
+        context = { only = { kind }, diagnostics = {} },
+    }
+    -- The action has to be requested synchronously, otherwise the write races
+    -- the buffer edit.
+    local responses = vim.lsp.buf_request_sync(bufnr, "textDocument/codeAction", params, 1000)
+    for client_id, response in pairs(responses or {}) do
+        local client = vim.lsp.get_client_by_id(client_id)
+        if client and client.name == client_name then
+            for _, action in pairs(response.result or {}) do
+                -- Nvim advertises resolveSupport, so servers may send the action
+                -- without its edit and expect a resolve round-trip
+                if not action.edit and action.data then
+                    local resolved = client:request_sync("codeAction/resolve", action, 1000, bufnr)
+                    action = resolved and resolved.result or action
+                end
+                if action.edit then
+                    vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding)
+                end
+            end
+        end
+    end
+end
+
+-- Fix, organize imports and format Python files with Ruff on save
 autocmd("BufWritePre", {
     group = augroup("format_on_save_ruff", {
         clear = true,
     }),
     pattern = "*.py",
-    callback = function()
-        local clients = vim.lsp.get_clients({ bufnr = 0 })
-        for _, client in ipairs(clients) do
-            if client.name == "ruff" and client.supports_method("textDocument/formatting") then
-                vim.lsp.buf.format({
-                    async = false,
-                    filter = function(c)
-                        return c.name == "ruff"
-                    end,
-                })
-                break
-            end
+    callback = function(event)
+        local clients = vim.lsp.get_clients({ bufnr = event.buf, name = "ruff" })
+        if #clients == 0 then
+            return
+        end
+
+        -- `ruff format` neither fixes lint violations nor sorts imports (I001);
+        -- both happen only through these source actions.
+        apply_source_action(event.buf, "ruff", "source.fixAll.ruff")
+        apply_source_action(event.buf, "ruff", "source.organizeImports.ruff")
+
+        if clients[1]:supports_method("textDocument/formatting") then
+            vim.lsp.buf.format({
+                async = false,
+                bufnr = event.buf,
+                filter = function(c)
+                    return c.name == "ruff"
+                end,
+            })
         end
     end,
-    desc = "Format Python with Ruff on save",
+    desc = "Fix, organize imports and format Python with Ruff on save",
+})
+
+-- Organize imports and format Go files with gopls on save
+autocmd("BufWritePre", {
+    group = augroup("format_on_save_gopls", {
+        clear = true,
+    }),
+    pattern = "*.go",
+    callback = function(event)
+        local clients = vim.lsp.get_clients({ bufnr = event.buf, name = "gopls" })
+        if #clients == 0 or not clients[1]:supports_method("textDocument/formatting") then
+            return
+        end
+
+        -- goimports = organizeImports + gofmt
+        apply_source_action(event.buf, "gopls", "source.organizeImports")
+
+        vim.lsp.buf.format({
+            async = false,
+            bufnr = event.buf,
+            filter = function(c)
+                return c.name == "gopls"
+            end,
+        })
+    end,
+    desc = "Organize imports and format Go on save",
 })
 
 -- Auto-create parent directories when saving a file
@@ -210,6 +298,56 @@ autocmd("BufWritePre", {
         vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
     end,
     desc = "Auto-create parent directories",
+})
+
+-- Format Markdown, YAML and JSON with Prettier on save (same set the prettier
+-- pre-commit hook covers, so the editor and the hook agree)
+autocmd("BufWritePre", {
+    group = augroup("format_on_save_prettier", {
+        clear = true,
+    }),
+    pattern = { "*.md", "*.yaml", "*.yml", "*.json" },
+    callback = function(event)
+        -- mason prepends its bin to nvim's PATH
+        local prettier = vim.fn.exepath("prettier")
+        if prettier == "" then
+            return
+        end
+
+        local lines = vim.api.nvim_buf_get_lines(event.buf, 0, -1, false)
+        -- --stdin-filepath both picks the parser and anchors .prettierrc lookup
+        local result = vim.system({ prettier, "--stdin-filepath", vim.api.nvim_buf_get_name(event.buf) }, {
+            stdin = table.concat(lines, "\n") .. "\n",
+            text = true,
+        }):wait()
+
+        if result.code ~= 0 then
+            vim.notify("prettier: " .. vim.trim(result.stderr or ""), vim.log.levels.WARN)
+            return
+        end
+
+        local formatted = vim.split((result.stdout or ""):gsub("\n$", ""), "\n")
+        if not vim.deep_equal(lines, formatted) then
+            local view = vim.fn.winsaveview()
+            vim.api.nvim_buf_set_lines(event.buf, 0, -1, false, formatted)
+            vim.fn.winrestview(view)
+        end
+    end,
+    desc = "Format Markdown, YAML and JSON with Prettier on save",
+})
+
+-- Terminal buffers: no gutter, start in insert mode
+autocmd("TermOpen", {
+    group = augroup("term_open", {
+        clear = true,
+    }),
+    callback = function()
+        vim.opt_local.number = false
+        vim.opt_local.relativenumber = false
+        vim.opt_local.signcolumn = "no"
+        vim.cmd.startinsert()
+    end,
+    desc = "Terminal buffer settings",
 })
 
 -- Disable auto-comment on new line
