@@ -161,13 +161,31 @@ map("n", "<leader>ur", "<cmd>set relativenumber!<cr>", {
     desc = "Toggle relative numbers",
 })
 
+-- Terminal
+map("n", "<leader>;", "<cmd>botright 15split | terminal<cr>", {
+    desc = "Terminal in split",
+})
+map("n", "<leader>:", "<cmd>vsplit | terminal<cr>", {
+    desc = "Terminal in vertical split",
+})
+-- Doubled, so a single <Esc> still reaches TUI programs running in the terminal
+map("t", "<Esc><Esc>", "<C-\\><C-n>", {
+    desc = "Exit terminal mode",
+})
+
 -- Diagnostic navigation
-map("n", "[d", vim.diagnostic.goto_prev, {
-    desc = "Previous diagnostic",
-})
-map("n", "]d", vim.diagnostic.goto_next, {
-    desc = "Next diagnostic",
-})
+-- [d/]d/[D/]D and <C-w>d are Nvim defaults since 0.11, so they are not mapped here
 map("n", "<leader>cd", vim.diagnostic.open_float, {
     desc = "Line diagnostics",
+})
+map("n", "<leader>cq", function()
+    vim.diagnostic.setqflist()
+end, {
+    desc = "All diagnostics to quickfix",
+})
+map("n", "<leader>ud", function()
+    local shown = vim.diagnostic.config().virtual_text ~= false
+    vim.diagnostic.config({ virtual_text = not shown and { spacing = 2, source = "if_many" } or false })
+end, {
+    desc = "Toggle inline diagnostics",
 })
