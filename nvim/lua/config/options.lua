@@ -74,3 +74,10 @@ opt.foldmethod = "expr"
 opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opt.foldlevel = 99 -- Start with all folds open
 opt.foldenable = true
+
+-- Diagnostics: text is off by default since 0.11, only signs are shown
+vim.diagnostic.config({
+    virtual_text = { spacing = 2, source = "if_many" },
+    severity_sort = true,
+    float = { border = "rounded", source = "if_many" },
+})

@@ -26,3 +26,17 @@ map("n", "<leader>fg", builtin.live_grep, { desc = "Live Grep" })
 map("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
 map("n", "<leader>fh", builtin.help_tags, { desc = "Help Tags" })
 map("n", "<leader>fo", builtin.oldfiles, { desc = "Recent Files" })
+map("n", "<leader>fd", function()
+    builtin.diagnostics({ bufnr = 0 })
+end, { desc = "Diagnostics (buffer)" })
+map("n", "<leader>fD", builtin.diagnostics, { desc = "Diagnostics (workspace)" })
+
+map("n", "<leader>e", function()
+    -- %:p:h, not %:h — telescope spawns rg with this as cwd, and a relative one
+    -- makes the spawn fail with ENOENT. Unnamed buffers expand to the cwd.
+    local dir = vim.fn.expand("%:p:h")
+    builtin.find_files({
+        cwd = dir,
+        prompt_title = "Files in " .. vim.fn.fnamemodify(dir, ":~:."),
+    })
+end, { desc = "Find Files (buffer dir)" })

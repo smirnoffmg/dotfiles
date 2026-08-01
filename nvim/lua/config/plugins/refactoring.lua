@@ -1,32 +1,26 @@
 local refactoring = require("refactoring")
+local debug = require("refactoring.debug")
 local map = vim.keymap.set
-
-refactoring.setup({})
 
 local expr = { expr = true }
 
--- Refactoring operations (Lua API with expr = true, as required by the README)
-map({ "n", "x" }, "<leader>re", function()
-    return refactoring.refactor("Extract Function")
-end, vim.tbl_extend("force", expr, { desc = "Extract Function" }))
-map({ "n", "x" }, "<leader>rf", function()
-    return refactoring.refactor("Extract Function To File")
-end, vim.tbl_extend("force", expr, { desc = "Extract Function To File" }))
-map({ "n", "x" }, "<leader>rv", function()
-    return refactoring.refactor("Extract Variable")
-end, vim.tbl_extend("force", expr, { desc = "Extract Variable" }))
-map({ "n", "x" }, "<leader>ri", function()
-    return refactoring.refactor("Inline Variable")
-end, vim.tbl_extend("force", expr, { desc = "Inline Variable" }))
-map("n", "<leader>rI", function()
-    return refactoring.refactor("Inline Function")
-end, vim.tbl_extend("force", expr, { desc = "Inline Function" }))
-map({ "n", "x" }, "<leader>rb", function()
-    return refactoring.refactor("Extract Block")
-end, vim.tbl_extend("force", expr, { desc = "Extract Block" }))
-map({ "n", "x" }, "<leader>rbf", function()
-    return refactoring.refactor("Extract Block To File")
-end, vim.tbl_extend("force", expr, { desc = "Extract Block To File" }))
+local function opts(desc, extra)
+    return vim.tbl_extend("force", expr, extra or {}, { desc = desc })
+end
+
+-- Every operation returns an operatorfunc string, so normal-mode maps need a
+-- textobject appended: "_" is the current line, "iw" the word under the cursor.
+map({ "n", "x" }, "<leader>re", refactoring.extract_func, opts("Extract Function"))
+map("n", "<leader>ree", function()
+    return refactoring.extract_func() .. "_"
+end, opts("Extract Function (line)"))
+map({ "n", "x" }, "<leader>rf", refactoring.extract_func_to_file, opts("Extract Function To File"))
+map({ "n", "x" }, "<leader>rv", refactoring.extract_var, opts("Extract Variable"))
+map("n", "<leader>rvv", function()
+    return refactoring.extract_var() .. "_"
+end, opts("Extract Variable (line)"))
+map({ "n", "x" }, "<leader>ri", refactoring.inline_var, opts("Inline Variable"))
+map({ "n", "x" }, "<leader>rI", refactoring.inline_func, opts("Inline Function"))
 
 -- Select refactor from menu
 map({ "n", "x" }, "<leader>rr", function()
@@ -35,11 +29,14 @@ end, { desc = "Select Refactor" })
 
 -- Debug helpers
 map("n", "<leader>rp", function()
-    refactoring.debug.printf({ below = false })
-end, { desc = "Debug Printf" })
-map({ "x", "n" }, "<leader>rd", function()
-    refactoring.debug.print_var()
-end, { desc = "Debug Print Variable" })
-map("n", "<leader>rc", function()
-    refactoring.debug.cleanup({})
-end, { desc = "Debug Clean" })
+    return debug.print_loc({ output_location = "below" })
+end, opts("Debug Print Location"))
+map("n", "<leader>rd", function()
+    return debug.print_var({ output_location = "below" }) .. "iw"
+end, opts("Debug Print Variable"))
+map("x", "<leader>rd", function()
+    return debug.print_var({ output_location = "below" })
+end, opts("Debug Print Variable"))
+map({ "n", "x" }, "<leader>rc", function()
+    return debug.cleanup({ restore_view = true })
+end, opts("Debug Clean", { remap = true }))
