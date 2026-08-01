@@ -1,0 +1,4 @@
+# lazy.nvim rewrites lazy-lock.json on every plugin update in its own layout.
+# Formatting it means every update lands as a failed commit that only passes on
+# the second `git add` — same reason .p10k.zsh is excluded from shfmt.
+nvim/lazy-lock.json

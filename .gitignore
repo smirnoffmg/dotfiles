@@ -15,6 +15,7 @@
 !.gitleaks.toml
 !.gitmodules
 !.pre-commit-config.yaml
+!.prettierignore
 # Shared baseline for detect-secrets — belongs in the repo
 !.secrets.baseline
 !README.md
