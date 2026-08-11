@@ -67,7 +67,16 @@ autocmd("FileType", {
     group = augroup("close_with_q", {
         clear = true,
     }),
-    pattern = { "help", "lspinfo", "man", "notify", "qf", "checkhealth", "startuptime" },
+    pattern = {
+        "help",
+        "lspinfo",
+        "man",
+        "notify",
+        "qf",
+        "checkhealth",
+        "startuptime",
+        "neotest-output-panel",
+    },
     callback = function(event)
         vim.bo[event.buf].buflisted = false
         vim.keymap.set("n", "q", "<cmd>close<cr>", {
