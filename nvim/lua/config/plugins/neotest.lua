@@ -1,9 +1,53 @@
 local neotest = require("neotest")
 local map = vim.keymap.set
 
+-- every built-in consumer reports where the tests live: virtual text and diagnostics
+-- land in the test file, and quickfix only opens for failures that carry an error
+-- location (a panic or a build error carries none). A run started from a solution
+-- buffer therefore finishes with nothing on screen, so report the outcome here.
+local function report(client)
+    client.listeners.results = function(adapter_id, results, partial)
+        if partial then
+            return
+        end
+        local tree = client:get_position(nil, { adapter = adapter_id })
+        if not tree then
+            return
+        end
+
+        local counts = { passed = 0, failed = 0, skipped = 0 }
+        local failed_outside_tests = false
+        for pos_id, result in pairs(results) do
+            local node = tree:get_key(pos_id)
+            if node and node:data().type == "test" and counts[result.status] then
+                counts[result.status] = counts[result.status] + 1
+            elseif result.status == "failed" then
+                failed_outside_tests = true
+            end
+        end
+
+        local total = counts.passed + counts.failed + counts.skipped
+        if total == 0 and not failed_outside_tests then
+            return
+        end
+        local failed = counts.failed > 0 or total == 0
+
+        local summary = total > 0
+                and string.format("%d passed, %d failed, %d skipped", counts.passed, counts.failed, counts.skipped)
+            or "run failed before any test reported"
+
+        vim.schedule(function()
+            vim.notify(
+                failed and summary .. "  (<leader>tp for output)" or summary,
+                failed and vim.log.levels.ERROR or vim.log.levels.INFO,
+                { title = "neotest" }
+            )
+        end)
+    end
+end
+
 neotest.setup({
-    -- running from a non-test buffer leaves no visible trace otherwise: diagnostics
-    -- land in the test file, and the summary tree stays collapsed
+    consumers = { report = report },
     quickfix = { open = true },
     status = { virtual_text = true },
     adapters = {
