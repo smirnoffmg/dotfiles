@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
-# Health check for this dotfiles repo. Read-only — starts no tmux server, edits
-# nothing.
+# Health check for this dotfiles repo. Starts no tmux server and edits no config.
+# The nvim check loads the full config, so lazy.nvim and treesitter may install
+# whatever is missing.
 #
 # Config correctness is measured in a freshly built shell, so the result does
 # not depend on how the shell you launch this from was started. A separate
@@ -85,9 +86,10 @@ else
   bad "~/.zshenv does not point at $target" "fix: ln -sf $target $link"
 fi
 
-[[ ${ZDOTDIR:-} == $REPO/zsh ]] &&
-  ok "ZDOTDIR is $ZDOTDIR" ||
-  bad "ZDOTDIR is '${ZDOTDIR:-unset}', expected $REPO/zsh"
+fresh_zdotdir=$(env -i HOME=$HOME zsh -c 'print -r -- $ZDOTDIR' 2>/dev/null)
+[[ $fresh_zdotdir == $REPO/zsh ]] &&
+  ok "ZDOTDIR is $fresh_zdotdir" ||
+  bad "ZDOTDIR is '${fresh_zdotdir:-unset}', expected $REPO/zsh"
 
 section "Config correctness (fresh shell)"
 
@@ -117,6 +119,12 @@ check_tool cargo "$HOME/.cargo/bin/*"
 check_tool brew "*/bin/brew"
 # The secret-scanning hooks depend on this one resolving through pyenv.
 check_tool pre-commit "$HOME/.pyenv/shims/*"
+
+for tool in rg fd golangci-lint dlv; do
+  [[ -n $(fresh $tool) ]] &&
+    ok "$tool available for nvim" ||
+    warn "$tool not found in a fresh shell" "nvim search, linting or debugging depends on it"
+done
 
 out=$(zsh -c 'true' 2>/dev/null)
 err=$(zsh -c 'true' 2>&1 >/dev/null)
@@ -154,7 +162,7 @@ dupes=(${(f)"$(print -l $fresh_path | sort | uniq -d)"})
   ok "no duplicate entries (${#fresh_path} total)" ||
   bad "duplicate entries: ${dupes}"
 
-brew_i=$(fp_index ${HOMEBREW_PREFIX:-/nonexistent}/bin)
+brew_i=$(fp_index ${$(fresh brew):h})
 usr_i=$(fp_index /usr/bin)
 if ((brew_i == 0)); then
   skip "Homebrew not on PATH — ordering checks skipped"
@@ -215,7 +223,7 @@ fi
 
 # A literal secret-looking assignment in a tracked file. gitleaks only sees the
 # staged diff, so working-tree edits like this slip past the commit hooks.
-leaks=$(git -C $REPO grep -nIE '^[[:space:]]*export [A-Z_]*(KEY|TOKEN|SECRET|PASSWORD)=[^"$'\''[:space:]]' \
+leaks=$(git -C $REPO grep -nIE '^[[:space:]]*export [A-Z_]*(KEY|TOKEN|SECRET|PASSWORD)=["'\'']?[^"$'\''[:space:]]' \
   -- . ':!doctor.sh' 2>/dev/null)
 [[ -z $leaks ]] &&
   ok "no literal secret assignments in tracked files" ||
@@ -230,7 +238,7 @@ tracked_but_ignored=$(git -C $REPO ls-files -i -c --exclude-standard)
 
 # The allowlist exists so new application state is ignored by default.
 holes=()
-for p in yandex-cloud raycast node_modules .DS_Store zsh/.zshrc.local; do
+for p in yandex-cloud raycast node_modules .DS_Store zsh/.zshrc.local opencode/opencode.json opencode/auth.json; do
   git -C $REPO check-ignore -q $p || holes+=$p
 done
 ((${#holes} == 0)) &&
