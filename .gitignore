@@ -18,6 +18,7 @@
 !.prettierignore
 # Shared baseline for detect-secrets — belongs in the repo
 !.secrets.baseline
+!CLAUDE.md
 !README.md
 !bootstrap.sh
 !doctor.sh
