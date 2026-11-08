@@ -16,6 +16,6 @@ if [[ -z $JAVA_HOME ]]; then
   [[ -n $JAVA_HOME ]] && path=($JAVA_HOME/bin $path)
 fi
 
-if [[ -n "$ALACRITTY_SOCKET" ]] && [[ -z "$TMUX" ]]; then
+if [[ -n "$ALACRITTY_SOCKET" ]] && [[ -z "$TMUX" ]] && (($+commands[tmux])); then
   tmux attach 2>/dev/null || exec tmux new-session
 fi
