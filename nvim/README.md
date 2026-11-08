@@ -42,7 +42,6 @@ nvim/
 | UI             | [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) | Indentation guides with scope highlighting                   |
 | UI             | [nvim-notify](https://github.com/rcarriga/nvim-notify)                          | Notification manager                                         |
 | Git            | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim)                     | Git decorations and hunk actions                             |
-| Editing        | [Comment.nvim](https://github.com/numToStr/Comment.nvim)                        | Toggle comments (`gc` / `gcc`)                               |
 | Editing        | [nvim-autopairs](https://github.com/windwp/nvim-autopairs)                      | Auto-close brackets/quotes (integrated with nvim-cmp)        |
 | Utility        | [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)                        | Lua utility library                                          |
 
@@ -51,8 +50,8 @@ nvim/
 Installed automatically via Mason (deferred to avoid blocking startup):
 
 - **lua_ls** — Lua
-- **pylsp** — Python (hover, completions, diagnostics)
-- **ruff** — Python (linting/formatting; hover disabled in favor of pylsp)
+- **pyright** — Python (types, hover, completions)
+- **ruff** — Python (linting/formatting; hover disabled in favor of pyright)
 - **rust_analyzer** — Rust
 - **gopls** — Go
 
@@ -114,7 +113,7 @@ Installed automatically via Mason (deferred to avoid blocking startup):
 | `<leader>vca` | Normal | Code actions             |
 | `<leader>vrr` | Normal | References               |
 | `<leader>vrn` | Normal | Rename symbol            |
-| `<leader>vws` | Normal | Workspace symbol search  |
+| `<leader>dS`  | Normal | Workspace symbol search  |
 | `[d` / `]d`   | Normal | Previous/next diagnostic |
 | `<leader>cd`  | Normal | Line diagnostics (float) |
 
