@@ -35,9 +35,12 @@ have() { command -v $1 >/dev/null 2>&1; }
 # Shallow-fetch an exact commit — GitHub allows fetching arbitrary shas, and
 # `clone --depth=1` can only pin branches/tags.
 clone_pinned() { # <url> <dest> <sha>
-  [[ -d $2 ]] && return 0
+  # Any commit counts as done: a failed fetch leaves no HEAD, and comparing
+  # against the pin would revert a deliberate `omz update` on re-run.
+  git -C "$2" rev-parse -q --verify HEAD >/dev/null 2>&1 && return 0
   git init -q "$2"
-  git -C "$2" fetch -q --depth=1 "$1" "$3"
+  git -C "$2" remote add origin "$1" 2>/dev/null || git -C "$2" remote set-url origin "$1"
+  git -C "$2" fetch -q --depth=1 origin "$3"
   git -C "$2" checkout -q --detach FETCH_HEAD
 }
 
@@ -71,7 +74,7 @@ step "Brew packages"
 # Per package, so one renamed/discontinued formula doesn't abort the whole run —
 # this script's next execution may be on a machine that needs everything else.
 _failed=()
-for _pkg in neovim tmux fzf eza gh go pyenv pyenv-virtualenv rbenv tree-sitter-cli stylua; do
+for _pkg in neovim tmux fzf eza gh go pyenv pyenv-virtualenv rbenv tree-sitter-cli stylua ripgrep fd golangci-lint delve; do
   brew install "$_pkg" || _failed+=("$_pkg")
 done
 for _pkg in alacritty font-fira-code-nerd-font font-jetbrains-mono; do
