@@ -8,7 +8,7 @@ together with the rest of the dotfiles.
 ```
 opencode/
 ├── AGENTS.md                      # global instructions (style, Python, Go, security)
-├── command/
+├── commands/
 │   ├── test.md                    # /test — ruff + pytest, triage failures
 │   └── mr-review.md               # /mr-review — review changes / MR
 └── instructions/
@@ -38,6 +38,6 @@ In the private work `opencode.json`, add:
 ## How it applies
 
 When the dotfiles are cloned into `~/.config`, the files land in place
-automatically. `AGENTS.md` and `command/` are picked up by OpenCode from
+automatically. `AGENTS.md` and `commands/` are picked up by OpenCode from
 `~/.config/opencode/` with no extra setup. Instruction files are loaded
 explicitly via the field above.

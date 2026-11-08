@@ -29,8 +29,17 @@
 !alacritty/**
 !nvim/
 !nvim/**
+# Named file by file: OpenCode reads opencode.json and auth.json from this
+# directory, and those hold internal hostnames and credentials.
 !opencode/
-!opencode/**
+!opencode/AGENTS.md
+!opencode/README.md
+!opencode/commands/
+!opencode/commands/mr-review.md
+!opencode/commands/test.md
+!opencode/instructions/
+!opencode/instructions/python-conventions.md
+!opencode/instructions/security-rules.md
 !tmux/
 !tmux/**
 !zsh/
