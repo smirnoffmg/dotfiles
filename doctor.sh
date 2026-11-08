@@ -120,6 +120,10 @@ check_tool brew "*/bin/brew"
 # The secret-scanning hooks depend on this one resolving through pyenv.
 check_tool pre-commit "$HOME/.pyenv/shims/*"
 
+[[ -d /Applications/Alacritty.app ]] &&
+  ok "Alacritty.app installed" ||
+  bad "Alacritty.app missing" "bootstrap.sh installs the pinned .dmg"
+
 for tool in rg fd golangci-lint dlv; do
   [[ -n $(fresh $tool) ]] &&
     ok "$tool available for nvim" ||

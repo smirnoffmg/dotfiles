@@ -28,6 +28,11 @@ NVM_VERSION=v0.40.3
 OMZ_REF=b37dd49ca5bfe0d99b35607637152cb8cc8b29d7
 AUTOSUGGESTIONS_REF=c3d4e576c9c86eac62884bd47c01f6faed043fc5
 P10K_REF=62341054d8aa40ade03fc55bdbc95b9ff2d8d2b6
+# Homebrew disabled the cask because the app is not notarized. To upgrade, take
+# the .dmg digest from: gh api repos/alacritty/alacritty/releases/tags/v<version>
+ALACRITTY_VERSION=0.17.0
+ALACRITTY_DMG_SHA256=ad8d7de35fb38e43184776cac6dfee05ca325caa0b6639a06a55e54e4b026620
+ALACRITTY_APP=/Applications/Alacritty.app
 
 step() { print -r -- $'\n'"==> $1"; }
 have() { command -v $1 >/dev/null 2>&1; }
@@ -42,6 +47,26 @@ clone_pinned() { # <url> <dest> <sha>
   git -C "$2" remote add origin "$1" 2>/dev/null || git -C "$2" remote set-url origin "$1"
   git -C "$2" fetch -q --depth=1 origin "$3"
   git -C "$2" checkout -q --detach FETCH_HEAD
+}
+
+# Every step returns explicitly: the caller's `||` turns off set -e in here, and
+# a checksum mismatch must stop the install. curl sets no quarantine attribute,
+# so Gatekeeper never sees this app and the digest is the only integrity check.
+install_alacritty() {
+  [[ -d $ALACRITTY_APP ]] && return 0
+  local tmp rc=0
+  tmp=$(mktemp -d) || return 1
+  curl --proto '=https' --tlsv1.2 -fsSL -o "$tmp/alacritty.dmg" \
+    "https://github.com/alacritty/alacritty/releases/download/v$ALACRITTY_VERSION/Alacritty-v$ALACRITTY_VERSION.dmg" &&
+    print -r -- "$ALACRITTY_DMG_SHA256  $tmp/alacritty.dmg" | shasum -a 256 -c - &&
+    hdiutil attach -quiet -nobrowse -readonly -mountpoint "$tmp/mnt" "$tmp/alacritty.dmg" || rc=1
+  if ((rc == 0)); then
+    ditto "$tmp/mnt/Alacritty.app" "$ALACRITTY_APP" || rc=1
+    hdiutil detach -quiet "$tmp/mnt" || rc=1
+  fi
+  ((rc == 0)) && ln -sfn "$ALACRITTY_APP/Contents/MacOS/alacritty" "$HOMEBREW_PREFIX/bin/alacritty" || rc=1
+  rm -rf "$tmp"
+  return $rc
 }
 
 if [[ $OSTYPE != darwin* ]]; then
@@ -77,9 +102,10 @@ _failed=()
 for _pkg in neovim tmux fzf eza gh go pyenv pyenv-virtualenv rbenv tree-sitter-cli stylua ripgrep fd golangci-lint delve; do
   brew install "$_pkg" || _failed+=("$_pkg")
 done
-for _pkg in alacritty font-fira-code-nerd-font font-jetbrains-mono; do
+for _pkg in font-fira-code-nerd-font font-jetbrains-mono; do
   brew install --cask "$_pkg" || _failed+=("$_pkg")
 done
+install_alacritty || _failed+=(alacritty)
 if (($#_failed)); then
   print -ru2 -- "brew could not install: $_failed — continuing, doctor.sh will show the damage"
 fi
