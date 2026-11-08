@@ -360,12 +360,12 @@ autocmd("TermOpen", {
 })
 
 -- Disable auto-comment on new line
-autocmd({ "BufNewFile", "BufRead" }, {
+autocmd("FileType", {
     group = augroup("no_auto_comment", {
         clear = true,
     }),
     callback = function()
-        vim.opt.formatoptions:remove({ "c", "r", "o" })
+        vim.opt_local.formatoptions:remove({ "c", "r", "o" })
     end,
     desc = "Disable auto-comment on new line",
 })
